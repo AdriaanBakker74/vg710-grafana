@@ -76,7 +76,8 @@
             ],
             "fields": "",
             "values": false
-          }
+          },
+          "noValue": "OFFLINE"
         },
         "fieldConfig": {
           "defaults": {
@@ -108,6 +109,17 @@
                   "OFFLINE": {
                     "color": "red",
                     "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              },
+              {
+                "type": "special",
+                "options": {
+                  "match": "null+nan",
+                  "result": {
+                    "color": "red",
+                    "index": 2,
                     "text": "OFFLINE"
                   }
                 }
@@ -165,7 +177,8 @@
             ],
             "fields": "",
             "values": false
-          }
+          },
+          "noValue": "OFFLINE"
         },
         "fieldConfig": {
           "defaults": {
@@ -197,6 +210,17 @@
                   "OFFLINE": {
                     "color": "red",
                     "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              },
+              {
+                "type": "special",
+                "options": {
+                  "match": "null+nan",
+                  "result": {
+                    "color": "red",
+                    "index": 2,
                     "text": "OFFLINE"
                   }
                 }
@@ -254,7 +278,8 @@
             ],
             "fields": "",
             "values": false
-          }
+          },
+          "noValue": "OFFLINE"
         },
         "fieldConfig": {
           "defaults": {
@@ -286,6 +311,17 @@
                   "OFFLINE": {
                     "color": "red",
                     "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              },
+              {
+                "type": "special",
+                "options": {
+                  "match": "null+nan",
+                  "result": {
+                    "color": "red",
+                    "index": 2,
                     "text": "OFFLINE"
                   }
                 }
@@ -343,7 +379,8 @@
             ],
             "fields": "",
             "values": false
-          }
+          },
+          "noValue": "OFFLINE"
         },
         "fieldConfig": {
           "defaults": {
@@ -375,6 +412,17 @@
                   "OFFLINE": {
                     "color": "red",
                     "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              },
+              {
+                "type": "special",
+                "options": {
+                  "match": "null+nan",
+                  "result": {
+                    "color": "red",
+                    "index": 2,
                     "text": "OFFLINE"
                   }
                 }
@@ -432,7 +480,8 @@
             ],
             "fields": "",
             "values": false
-          }
+          },
+          "noValue": "OFFLINE"
         },
         "fieldConfig": {
           "defaults": {
@@ -464,6 +513,17 @@
                   "OFFLINE": {
                     "color": "red",
                     "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              },
+              {
+                "type": "special",
+                "options": {
+                  "match": "null+nan",
+                  "result": {
+                    "color": "red",
+                    "index": 2,
                     "text": "OFFLINE"
                   }
                 }
@@ -501,8 +561,8 @@
               "resultReuseEnabled": false,
               "resultReuseMaxAgeInMinutes": 0
             },
-            "rawSQL": "SELECT MAX(window_start) AS laatste_data FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part = date_format(current_date, '%Y-%m-%d')",
-            "format": 1,
+            "rawSQL": "SELECT MAX(window_start) AS \"Laatste data\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part >= date_format(date_add('day', -7, current_date), '%Y-%m-%d')",
+            "format": 0,
             "refId": "A"
           }
         ],
