@@ -36,8 +36,8 @@
         "gridPos": {
           "x": 0,
           "y": 1,
-          "w": 12,
-          "h": 7
+          "w": 24,
+          "h": 6
         },
         "datasource": {
           "type": "grafana-athena-datasource",
@@ -65,8 +65,11 @@
           "graphMode": "none",
           "colorMode": "background",
           "justifyMode": "center",
-          "textMode": "value_and_name",
+          "textMode": "value",
           "orientation": "horizontal",
+          "text": {
+            "valueSize": 48
+          },
           "reduceOptions": {
             "calcs": [
               "lastNotNull"
@@ -120,10 +123,10 @@
         "type": "stat",
         "title": "GNSS Ontvanger",
         "gridPos": {
-          "x": 12,
-          "y": 1,
-          "w": 12,
-          "h": 7
+          "x": 0,
+          "y": 7,
+          "w": 24,
+          "h": 6
         },
         "datasource": {
           "type": "grafana-athena-datasource",
@@ -151,8 +154,11 @@
           "graphMode": "none",
           "colorMode": "background",
           "justifyMode": "center",
-          "textMode": "value_and_name",
+          "textMode": "value",
           "orientation": "horizontal",
+          "text": {
+            "valueSize": 48
+          },
           "reduceOptions": {
             "calcs": [
               "lastNotNull"
@@ -207,9 +213,9 @@
         "title": "Temperatuur",
         "gridPos": {
           "x": 0,
-          "y": 8,
-          "w": 8,
-          "h": 7
+          "y": 13,
+          "w": 24,
+          "h": 6
         },
         "datasource": {
           "type": "grafana-athena-datasource",
@@ -237,8 +243,11 @@
           "graphMode": "none",
           "colorMode": "background",
           "justifyMode": "center",
-          "textMode": "value_and_name",
+          "textMode": "value",
           "orientation": "horizontal",
+          "text": {
+            "valueSize": 48
+          },
           "reduceOptions": {
             "calcs": [
               "lastNotNull"
@@ -292,10 +301,10 @@
         "type": "stat",
         "title": "Weerstation",
         "gridPos": {
-          "x": 8,
-          "y": 8,
-          "w": 8,
-          "h": 7
+          "x": 0,
+          "y": 19,
+          "w": 24,
+          "h": 6
         },
         "datasource": {
           "type": "grafana-athena-datasource",
@@ -323,8 +332,11 @@
           "graphMode": "none",
           "colorMode": "background",
           "justifyMode": "center",
-          "textMode": "value_and_name",
+          "textMode": "value",
           "orientation": "horizontal",
+          "text": {
+            "valueSize": 48
+          },
           "reduceOptions": {
             "calcs": [
               "lastNotNull"
@@ -378,10 +390,10 @@
         "type": "stat",
         "title": "Trilling",
         "gridPos": {
-          "x": 16,
-          "y": 8,
-          "w": 8,
-          "h": 7
+          "x": 0,
+          "y": 25,
+          "w": 24,
+          "h": 6
         },
         "datasource": {
           "type": "grafana-athena-datasource",
@@ -409,8 +421,11 @@
           "graphMode": "none",
           "colorMode": "background",
           "justifyMode": "center",
-          "textMode": "value_and_name",
+          "textMode": "value",
           "orientation": "horizontal",
+          "text": {
+            "valueSize": 48
+          },
           "reduceOptions": {
             "calcs": [
               "lastNotNull"
@@ -462,11 +477,11 @@
       {
         "id": 30,
         "type": "stat",
-        "title": "Laatste data",
+        "title": "Laatste data ontvangen",
         "gridPos": {
           "x": 0,
-          "y": 15,
-          "w": 12,
+          "y": 31,
+          "w": 24,
           "h": 4
         },
         "datasource": {
@@ -496,6 +511,9 @@
           "colorMode": "none",
           "justifyMode": "center",
           "textMode": "value_and_name",
+          "text": {
+            "valueSize": 20
+          },
           "reduceOptions": {
             "calcs": [
               "lastNotNull"
@@ -524,38 +542,18 @@
         }
       },
       {
-        "id": 31,
-        "type": "text",
-        "title": "",
-        "gridPos": {
-          "x": 12,
-          "y": 15,
-          "w": 12,
-          "h": 4
-        },
-        "options": {
-          "mode": "markdown",
-          "content": "<div style='text-align:center;padding:12px;font-size:14px;color:#888'>Dashboard ververst automatisch elke 5 minuten.<br>Status is <b>ONLINE</b> als er data is ontvangen in de laatste 10 minuten.</div>"
-        },
-        "transparent": true,
-        "fieldConfig": {
-          "defaults": {},
-          "overrides": []
-        }
-      },
-      {
         "id": 99,
         "type": "text",
         "title": "",
         "gridPos": {
           "x": 0,
-          "y": 19,
+          "y": 35,
           "w": 24,
           "h": 2
         },
         "options": {
           "mode": "markdown",
-          "content": "<div style='text-align:center;color:#888;font-size:12px;padding:8px 0'>Bakker Machine Control &nbsp;—&nbsp; &copy; A. Bakker &nbsp;—&nbsp; v1.0</div>"
+          "content": "<div style='text-align:center;color:#888;font-size:12px;padding:8px 0'>Bakker Machine Control &nbsp;—&nbsp; &copy; A. Bakker &nbsp;—&nbsp; v1.0 &nbsp;|&nbsp; Ververst elke 5 minuten</div>"
         },
         "transparent": true,
         "fieldConfig": {
