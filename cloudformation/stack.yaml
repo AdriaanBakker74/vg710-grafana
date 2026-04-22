@@ -1,0 +1,196 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  VG710 NMEA 5-minuten downsampler.
+  Triggered via EventBridge (S3 ObjectCreated), schrijft pre-computed
+  5-minuten posities naar een aparte S3 prefix voor het Grafana dashboard.
+
+Parameters:
+
+  S3BucketName:
+    Type: String
+    Default: bmc-vg710-raw-eun1
+
+  S3RawPrefix:
+    Type: String
+    Default: vg710-raw
+
+  OutputPrefix:
+    Type: String
+    Default: vg710-5min
+
+  LambdaZipKey:
+    Type: String
+    Default: lambda/vg710-nmea-downsampler.zip
+
+  WindowMinutes:
+    Type: Number
+    Default: 5
+
+Resources:
+
+  # -----------------------------------------------------------------------
+  # Dead Letter Queue — vangt mislukte Lambda-aanroepen op (14 dagen)
+  # -----------------------------------------------------------------------
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: vg710-nmea-downsampler-dlq
+      MessageRetentionPeriod: 1209600
+      Tags:
+        - Key: Project
+          Value: vg710
+
+  # -----------------------------------------------------------------------
+  # IAM rol voor de Lambda functie (minimale rechten)
+  # -----------------------------------------------------------------------
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: vg710-nmea-downsampler-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3ReadRaw
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub "arn:aws:s3:::${S3BucketName}/${S3RawPrefix}/*"
+        - PolicyName: S3WriteOutput
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${S3BucketName}/${OutputPrefix}/*"
+        - PolicyName: SQSSendDLQ
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: sqs:SendMessage
+                Resource: !GetAtt DeadLetterQueue.Arn
+      Tags:
+        - Key: Project
+          Value: vg710
+
+  # -----------------------------------------------------------------------
+  # Lambda functie
+  # -----------------------------------------------------------------------
+  DownsamplerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: vg710-nmea-downsampler
+      Description: Schrijft 5-minuten GPS posities naar S3 bij elk nieuw NMEA bestand
+      Runtime: python3.12
+      Handler: handler.handler
+      Role: !GetAtt LambdaRole.Arn
+      Timeout: 60
+      MemorySize: 128
+      ReservedConcurrentExecutions: 50
+      Environment:
+        Variables:
+          OUTPUT_PREFIX: !Ref OutputPrefix
+          WINDOW_MINUTES: !Ref WindowMinutes
+      DeadLetterConfig:
+        TargetArn: !GetAtt DeadLetterQueue.Arn
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: !Ref LambdaZipKey
+      Tags:
+        Project: vg710
+
+  # -----------------------------------------------------------------------
+  # EventBridge regel: S3 ObjectCreated op NMEA bestanden → Lambda
+  # Patroon: {raw_prefix}/{device_id}/nmea/{date}/{hour}/{ts}.ndjson
+  # -----------------------------------------------------------------------
+  NmeaEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: vg710-nmea-new-file
+      Description: Trigger downsampler bij nieuw NMEA bestand in S3
+      EventPattern:
+        source:
+          - aws.s3
+        detail-type:
+          - Object Created
+        detail:
+          bucket:
+            name:
+              - !Ref S3BucketName
+          object:
+            key:
+              - prefix: !Sub "${S3RawPrefix}/"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt DownsamplerFunction.Arn
+          Id: NmeaDownsampler
+
+  LambdaEventBridgePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt DownsamplerFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NmeaEventRule.Arn
+
+  # -----------------------------------------------------------------------
+  # CloudWatch alarmen
+  # -----------------------------------------------------------------------
+  DLQAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: vg710-nmea-downsampler-dlq-niet-leeg
+      AlarmDescription: >
+        Mislukte NMEA downsampler aanroepen in de DLQ.
+        Controleer CloudWatch Logs van vg710-nmea-downsampler.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt DeadLetterQueue.QueueName
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  LambdaErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: vg710-nmea-downsampler-fouten
+      AlarmDescription: Lambda functie geeft fouten terug
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref DownsamplerFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+Outputs:
+
+  LambdaName:
+    Value: !Ref DownsamplerFunction
+
+  LambdaArn:
+    Value: !GetAtt DownsamplerFunction.Arn
+
+  DLQUrl:
+    Value: !Ref DeadLetterQueue
+
+  DLQArn:
+    Value: !GetAtt DeadLetterQueue.Arn
