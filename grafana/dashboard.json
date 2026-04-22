@@ -358,7 +358,7 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 3,
+          "w": 2,
           "x": 21,
           "y": 1
         },
@@ -449,6 +449,9 @@
             "lat": 52.68,
             "lon": 5.09,
             "zoom": 10
+          },
+          "tooltip": {
+            "mode": "details"
           }
         },
         "targets": [
@@ -461,7 +464,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 1,
-            "rawSQL": "SELECT window_start AS ts, lat AS latitude, lon AS longitude, satellites AS num_satellites FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND lat > 0 AND lon > 0 ORDER BY window_start ASC LIMIT 5000",
+            "rawSQL": "SELECT window_start AS ts, device_id AS modem, lat AS latitude, lon AS longitude, satellites AS num_satellites, ROUND(hdop,2) AS hdop, ROUND(altitude,1) AS altitude_m FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND lat > 0 AND lon > 0 ORDER BY window_start ASC LIMIT 5000",
             "refId": "A"
           }
         ],
@@ -797,12 +800,136 @@
         "type": "timeseries"
       },
       {
+        "id": 24,
+        "type": "timeseries",
+        "title": "GPS Fix Quality",
+        "gridPos": {
+          "x": 0,
+          "y": 39,
+          "w": 24,
+          "h": 10
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": true,
+              "resultReuseMaxAgeInMinutes": 60
+            },
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, CASE WHEN fix_quality = 0 THEN 1.0 END AS \"Geen fix\", CASE WHEN fix_quality = 1 THEN 1.0 END AS \"Standalone\", CASE WHEN fix_quality = 2 THEN 1.0 END AS \"DGPS\", CASE WHEN fix_quality = 4 THEN 1.0 END AS \"RTK Fixed\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY time ASC",
+            "format": 0,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "points",
+              "pointSize": 9,
+              "lineWidth": 0,
+              "fillOpacity": 100,
+              "showPoints": "always",
+              "spanNulls": false,
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "axisLabel": "",
+              "axisPlacement": "hidden"
+            },
+            "unit": "short",
+            "min": 0.5,
+            "max": 1.5
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Geen fix"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "red",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Standalone"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "blue",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "DGPS"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "orange",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "RTK Fixed"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
         "collapsed": false,
         "gridPos": {
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 39
+          "y": 49
         },
         "id": 103,
         "title": "Data Download (CSV)",
@@ -850,7 +977,7 @@
           "h": 12,
           "w": 24,
           "x": 0,
-          "y": 40
+          "y": 50
         },
         "id": 40,
         "options": {
@@ -882,7 +1009,7 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 52
+          "y": 62
         },
         "id": 200,
         "title": "CAN Sensoren",
@@ -941,7 +1068,7 @@
           "h": 4,
           "w": 8,
           "x": 0,
-          "y": 53
+          "y": 63
         },
         "id": 201,
         "options": {
@@ -1024,7 +1151,7 @@
           "h": 4,
           "w": 8,
           "x": 8,
-          "y": 53
+          "y": 63
         },
         "id": 202,
         "options": {
@@ -1107,7 +1234,7 @@
           "h": 4,
           "w": 8,
           "x": 16,
-          "y": 53
+          "y": 63
         },
         "id": 203,
         "options": {
@@ -1194,7 +1321,7 @@
           "h": 10,
           "w": 24,
           "x": 0,
-          "y": 57
+          "y": 67
         },
         "id": 210,
         "options": {
@@ -1223,6 +1350,50 @@
         ],
         "title": "CAN Sensoren — aanwezigheid per 5 minuten",
         "type": "state-timeline"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "title": "",
+        "gridPos": {
+          "x": 23,
+          "y": 1,
+          "w": 1,
+          "h": 4
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "**v1.0**",
+          "justifyContent": "center",
+          "textMode": "auto"
+        },
+        "transparent": true,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        }
+      },
+      {
+        "id": 999,
+        "type": "text",
+        "title": "",
+        "gridPos": {
+          "x": 0,
+          "y": 77,
+          "w": 24,
+          "h": 2
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "<div style=\"text-align:center; color:#888; font-size:12px; padding:8px 0;\">Bakker Machine Control &nbsp;—&nbsp; &copy; A. Bakker &nbsp;—&nbsp; v1.0</div>",
+          "justifyContent": "center",
+          "textMode": "html"
+        },
+        "transparent": true,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        }
       }
     ],
     "refresh": "5m",
