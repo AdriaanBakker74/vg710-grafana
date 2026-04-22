@@ -1,0 +1,599 @@
+{
+  "meta": {},
+  "dashboard": {
+    "uid": "vg710-status",
+    "title": "VG710 Online Status",
+    "tags": [
+      "vg710",
+      "status"
+    ],
+    "timezone": "browser",
+    "refresh": "5m",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "panels": [
+      {
+        "id": 1,
+        "type": "row",
+        "title": "Online Status",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 1
+        },
+        "collapsed": false
+      },
+      {
+        "id": 10,
+        "type": "stat",
+        "title": "Modem",
+        "gridPos": {
+          "x": 0,
+          "y": 1,
+          "w": 12,
+          "h": 7
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-athena-datasource",
+              "uid": "efiw7tmiwfrb4e"
+            },
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": false,
+              "resultReuseMaxAgeInMinutes": 0
+            },
+            "rawSQL": "SELECT CASE WHEN COUNT(*) > 0 THEN 'ONLINE' ELSE 'OFFLINE' END AS status FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part = date_format(current_date, '%Y-%m-%d') AND from_iso8601_timestamp(window_start) > (current_timestamp - interval '10' minute)",
+            "format": 1,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "justifyMode": "center",
+          "textMode": "value_and_name",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "ONLINE": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "ONLINE"
+                  },
+                  "OFFLINE": {
+                    "color": "red",
+                    "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              }
+            ],
+            "custom": {}
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 11,
+        "type": "stat",
+        "title": "GNSS Ontvanger",
+        "gridPos": {
+          "x": 12,
+          "y": 1,
+          "w": 12,
+          "h": 7
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-athena-datasource",
+              "uid": "efiw7tmiwfrb4e"
+            },
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": false,
+              "resultReuseMaxAgeInMinutes": 0
+            },
+            "rawSQL": "SELECT CASE WHEN COUNT(*) > 0 THEN 'ONLINE' ELSE 'OFFLINE' END AS status FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part = date_format(current_date, '%Y-%m-%d') AND from_iso8601_timestamp(window_start) > (current_timestamp - interval '10' minute) AND fix_quality > 0",
+            "format": 1,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "justifyMode": "center",
+          "textMode": "value_and_name",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "ONLINE": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "ONLINE"
+                  },
+                  "OFFLINE": {
+                    "color": "red",
+                    "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              }
+            ],
+            "custom": {}
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 20,
+        "type": "stat",
+        "title": "Temperatuur",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 8,
+          "h": 7
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-athena-datasource",
+              "uid": "efiw7tmiwfrb4e"
+            },
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": false,
+              "resultReuseMaxAgeInMinutes": 0
+            },
+            "rawSQL": "SELECT CASE WHEN COUNT(*) > 0 THEN 'ONLINE' ELSE 'OFFLINE' END AS status FROM vg710_db.can_heartbeat WHERE device_id = '${modem}' AND sensor_group = 'Temperatuur' AND date_part = date_format(current_date, '%Y-%m-%d') AND from_iso8601_timestamp(window_start) > (current_timestamp - interval '10' minute)",
+            "format": 1,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "justifyMode": "center",
+          "textMode": "value_and_name",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "ONLINE": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "ONLINE"
+                  },
+                  "OFFLINE": {
+                    "color": "red",
+                    "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              }
+            ],
+            "custom": {}
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 21,
+        "type": "stat",
+        "title": "Weerstation",
+        "gridPos": {
+          "x": 8,
+          "y": 8,
+          "w": 8,
+          "h": 7
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-athena-datasource",
+              "uid": "efiw7tmiwfrb4e"
+            },
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": false,
+              "resultReuseMaxAgeInMinutes": 0
+            },
+            "rawSQL": "SELECT CASE WHEN COUNT(*) > 0 THEN 'ONLINE' ELSE 'OFFLINE' END AS status FROM vg710_db.can_heartbeat WHERE device_id = '${modem}' AND sensor_group = 'Weerstation' AND date_part = date_format(current_date, '%Y-%m-%d') AND from_iso8601_timestamp(window_start) > (current_timestamp - interval '10' minute)",
+            "format": 1,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "justifyMode": "center",
+          "textMode": "value_and_name",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "ONLINE": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "ONLINE"
+                  },
+                  "OFFLINE": {
+                    "color": "red",
+                    "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              }
+            ],
+            "custom": {}
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 22,
+        "type": "stat",
+        "title": "Trilling",
+        "gridPos": {
+          "x": 16,
+          "y": 8,
+          "w": 8,
+          "h": 7
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-athena-datasource",
+              "uid": "efiw7tmiwfrb4e"
+            },
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": false,
+              "resultReuseMaxAgeInMinutes": 0
+            },
+            "rawSQL": "SELECT CASE WHEN COUNT(*) > 0 THEN 'ONLINE' ELSE 'OFFLINE' END AS status FROM vg710_db.can_heartbeat WHERE device_id = '${modem}' AND sensor_group = 'Trilling' AND date_part = date_format(current_date, '%Y-%m-%d') AND from_iso8601_timestamp(window_start) > (current_timestamp - interval '10' minute)",
+            "format": 1,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background",
+          "justifyMode": "center",
+          "textMode": "value_and_name",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "ONLINE": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "ONLINE"
+                  },
+                  "OFFLINE": {
+                    "color": "red",
+                    "index": 1,
+                    "text": "OFFLINE"
+                  }
+                }
+              }
+            ],
+            "custom": {}
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 30,
+        "type": "stat",
+        "title": "Laatste data",
+        "gridPos": {
+          "x": 0,
+          "y": 15,
+          "w": 12,
+          "h": 4
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "efiw7tmiwfrb4e"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-athena-datasource",
+              "uid": "efiw7tmiwfrb4e"
+            },
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": false,
+              "resultReuseMaxAgeInMinutes": 0
+            },
+            "rawSQL": "SELECT MAX(window_start) AS laatste_data FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part = date_format(current_date, '%Y-%m-%d')",
+            "format": 1,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "none",
+          "justifyMode": "center",
+          "textMode": "value_and_name",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "text",
+                  "value": null
+                }
+              ]
+            },
+            "custom": {}
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 31,
+        "type": "text",
+        "title": "",
+        "gridPos": {
+          "x": 12,
+          "y": 15,
+          "w": 12,
+          "h": 4
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "<div style='text-align:center;padding:12px;font-size:14px;color:#888'>Dashboard ververst automatisch elke 5 minuten.<br>Status is <b>ONLINE</b> als er data is ontvangen in de laatste 10 minuten.</div>"
+        },
+        "transparent": true,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        }
+      },
+      {
+        "id": 99,
+        "type": "text",
+        "title": "",
+        "gridPos": {
+          "x": 0,
+          "y": 19,
+          "w": 24,
+          "h": 2
+        },
+        "options": {
+          "mode": "markdown",
+          "content": "<div style='text-align:center;color:#888;font-size:12px;padding:8px 0'>Bakker Machine Control &nbsp;—&nbsp; &copy; A. Bakker &nbsp;—&nbsp; v1.0</div>"
+        },
+        "transparent": true,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        }
+      }
+    ],
+    "schemaVersion": 36,
+    "version": 0,
+    "templating": {
+      "list": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "efiw7tmiwfrb4e"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "label": "Modem / Asset",
+          "multi": false,
+          "name": "modem",
+          "query": {
+            "connectionArgs": {
+              "catalog": "AwsDataCatalog",
+              "database": "vg710_db",
+              "region": "eu-north-1",
+              "resultReuseEnabled": true,
+              "resultReuseMaxAgeInMinutes": 60
+            },
+            "format": 1,
+            "rawSQL": "SELECT DISTINCT device_id FROM vg710_db.nmea_5min ORDER BY device_id LIMIT 100"
+          },
+          "refresh": 2,
+          "sort": 1,
+          "type": "query"
+        }
+      ]
+    }
+  }
+}

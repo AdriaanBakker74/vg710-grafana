@@ -802,7 +802,7 @@
       {
         "id": 24,
         "type": "timeseries",
-        "title": "GPS Fix Quality",
+        "title": "GNSS Status",
         "gridPos": {
           "x": 0,
           "y": 39,
@@ -844,7 +844,7 @@
               "drawStyle": "points",
               "pointSize": 9,
               "lineWidth": 0,
-              "fillOpacity": 100,
+              "fillOpacity": 0,
               "showPoints": "always",
               "spanNulls": false,
               "hideFrom": {
@@ -852,12 +852,13 @@
                 "tooltip": false,
                 "viz": false
               },
-              "axisLabel": "",
-              "axisPlacement": "hidden"
+              "axisLabel": " ",
+              "axisWidth": 1
             },
-            "unit": "short",
             "min": 0.5,
-            "max": 1.5
+            "max": 1.5,
+            "unit": "none",
+            "decimals": 0
           },
           "overrides": [
             {
