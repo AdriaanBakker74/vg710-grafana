@@ -32,7 +32,7 @@
     }
   },
   "dashboard": {
-    "description": "VG710 GPS posities — 5-minuten dataset via AWS Athena (nmea_5min). Lichtgewicht alternatief voor het fleet-tracker dashboard.",
+    "description": "VG710 GPS posities \u2014 5-minuten dataset via AWS Athena (nmea_5min). Lichtgewicht alternatief voor het fleet-tracker dashboard.",
     "id": 2330605062848512,
     "panels": [
       {
@@ -99,7 +99,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 1,
-            "rawSQL": "SELECT COUNT(DISTINCT device_id) AS actief FROM vg710_db.nmea_5min WHERE date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d')",
+            "rawSQL": "SELECT COUNT(DISTINCT device_id) AS actief FROM vg710_db.nmea_5min WHERE date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s')",
             "refId": "A"
           }
         ],
@@ -161,7 +161,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 1,
-            "rawSQL": "SELECT COUNT(*) AS posities FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d')",
+            "rawSQL": "SELECT COUNT(*) AS posities FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s')",
             "refId": "A"
           }
         ],
@@ -464,7 +464,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 1,
-            "rawSQL": "SELECT window_start AS ts, device_id AS modem, lat AS latitude, lon AS longitude, satellites AS num_satellites, ROUND(hdop,2) AS hdop, ROUND(altitude,1) AS altitude_m FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND lat > 0 AND lon > 0 ORDER BY window_start ASC LIMIT 5000",
+            "rawSQL": "SELECT window_start AS ts, device_id AS modem, lat AS latitude, lon AS longitude, satellites AS num_satellites, ROUND(hdop,2) AS hdop, ROUND(altitude,1) AS altitude_m FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND lat > 0 AND lon > 0 AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY window_start ASC LIMIT 5000",
             "refId": "A"
           }
         ],
@@ -531,7 +531,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 1,
-            "rawSQL": "SELECT window_start AS ts, ROUND(lat,5) AS latitude, ROUND(lon,5) AS longitude, ROUND(altitude,1) AS altitude, satellites AS num_satellites FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY window_start DESC LIMIT 200",
+            "rawSQL": "SELECT window_start AS ts, ROUND(lat,5) AS latitude, ROUND(lon,5) AS longitude, ROUND(altitude,1) AS altitude, satellites AS num_satellites FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY window_start DESC LIMIT 200",
             "refId": "A"
           }
         ],
@@ -601,7 +601,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 0,
-            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, satellites AS \"Satellieten\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY window_start ASC",
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, satellites AS \"Satellieten\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY window_start ASC",
             "refId": "A"
           }
         ],
@@ -676,7 +676,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 0,
-            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, ROUND(hdop,2) AS \"HDOP\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY window_start ASC",
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, ROUND(hdop,2) AS \"HDOP\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY window_start ASC",
             "refId": "A"
           }
         ],
@@ -735,7 +735,7 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 0,
-            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, ROUND(altitude,2) AS \"Hoogte (m)\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY window_start ASC",
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, ROUND(altitude,2) AS \"Hoogte (m)\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY window_start ASC",
             "refId": "A"
           }
         ],
@@ -792,11 +792,11 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 0,
-            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, ROUND(lat,5) AS \"Latitude\", ROUND(lon,5) AS \"Longitude\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY window_start ASC",
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, ROUND(lat,5) AS \"Latitude\", ROUND(lon,5) AS \"Longitude\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY window_start ASC",
             "refId": "A"
           }
         ],
-        "title": "GPS Coördinaten",
+        "title": "GPS Co\u00f6rdinaten",
         "type": "timeseries"
       },
       {
@@ -822,7 +822,7 @@
               "resultReuseEnabled": true,
               "resultReuseMaxAgeInMinutes": 60
             },
-            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, CASE WHEN fix_quality = 0 THEN 1.0 END AS \"Geen fix\", CASE WHEN fix_quality = 1 THEN 1.0 END AS \"Standalone\", CASE WHEN fix_quality = 2 THEN 1.0 END AS \"DGPS\", CASE WHEN fix_quality = 4 THEN 1.0 END AS \"RTK Fixed\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY time ASC",
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, CASE WHEN fix_quality = 0 THEN 1.0 END AS \"Geen fix\", CASE WHEN fix_quality = 1 THEN 1.0 END AS \"Standalone\", CASE WHEN fix_quality = 2 THEN 1.0 END AS \"DGPS\", CASE WHEN fix_quality = 4 THEN 1.0 END AS \"RTK Fixed\" FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY time ASC",
             "format": 0,
             "refId": "A"
           }
@@ -997,11 +997,11 @@
               "resultReuseMaxAgeInMinutes": 60
             },
             "format": 1,
-            "rawSQL": "SELECT window_start AS ts, device_id, ROUND(lat,6) AS latitude, ROUND(lon,6) AS longitude, ROUND(altitude,1) AS altitude, satellites AS num_satellites, ROUND(hdop,2) AS hdop, fix_label FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') ORDER BY ts ASC",
+            "rawSQL": "SELECT window_start AS ts, device_id, ROUND(lat,6) AS latitude, ROUND(lon,6) AS longitude, ROUND(altitude,1) AS altitude, satellites AS num_satellites, ROUND(hdop,2) AS hdop, fix_label FROM vg710_db.nmea_5min WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY ts ASC",
             "refId": "A"
           }
         ],
-        "title": "NMEA Export — klik Inspect > Data > Download CSV",
+        "title": "NMEA Export \u2014 klik Inspect > Data > Download CSV",
         "type": "table"
       },
       {
@@ -1096,7 +1096,7 @@
             "refId": "A"
           }
         ],
-        "title": "Temperatuur — nu (ID 640-680)",
+        "title": "Temperatuur \u2014 nu (ID 640-680)",
         "type": "stat"
       },
       {
@@ -1179,7 +1179,7 @@
             "refId": "A"
           }
         ],
-        "title": "Weerstation — nu (ID 896-936)",
+        "title": "Weerstation \u2014 nu (ID 896-936)",
         "type": "stat"
       },
       {
@@ -1262,7 +1262,7 @@
             "refId": "A"
           }
         ],
-        "title": "Trilling — nu (ID 1152-1192)",
+        "title": "Trilling \u2014 nu (ID 1152-1192)",
         "type": "stat"
       },
       {
@@ -1345,11 +1345,11 @@
               "resultReuseMaxAgeInMinutes": 5
             },
             "format": 0,
-            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, MAX(CASE WHEN sensor_group = 'Temperatuur' THEN message_count ELSE 0 END) AS \"Temperatuur\", MAX(CASE WHEN sensor_group = 'Weerstation' THEN message_count ELSE 0 END) AS \"Weerstation\", MAX(CASE WHEN sensor_group = 'Trilling' THEN message_count ELSE 0 END) AS \"Trilling\" FROM vg710_db.can_heartbeat WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') GROUP BY window_start ORDER BY time ASC",
+            "rawSQL": "SELECT from_iso8601_timestamp(window_start) AS time, MAX(CASE WHEN sensor_group = 'Temperatuur' THEN message_count ELSE 0 END) AS \"Temperatuur\", MAX(CASE WHEN sensor_group = 'Weerstation' THEN message_count ELSE 0 END) AS \"Weerstation\", MAX(CASE WHEN sensor_group = 'Trilling' THEN message_count ELSE 0 END) AS \"Trilling\" FROM vg710_db.can_heartbeat WHERE device_id = '${modem}' AND date_part BETWEEN date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%d') AND date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%d') GROUP BY window_start AND window_start >= date_format(from_iso8601_timestamp('${__from:date:iso}'), '%Y-%m-%dT%H:%i:%s') AND window_start <= date_format(from_iso8601_timestamp('${__to:date:iso}'), '%Y-%m-%dT%H:%i:%s') ORDER BY time ASC",
             "refId": "A"
           }
         ],
-        "title": "CAN Sensoren — aanwezigheid per 5 minuten",
+        "title": "CAN Sensoren \u2014 aanwezigheid per 5 minuten",
         "type": "state-timeline"
       },
       {
@@ -1386,7 +1386,7 @@
         },
         "options": {
           "mode": "markdown",
-          "content": "<div style=\"text-align:center; color:#888; font-size:12px; padding:8px 0;\">Bakker Machine Control &nbsp;—&nbsp; &copy; A. Bakker &nbsp;—&nbsp; v1.0</div>",
+          "content": "<div style=\"text-align:center; color:#888; font-size:12px; padding:8px 0;\">Bakker Machine Control &nbsp;\u2014&nbsp; &copy; A. Bakker &nbsp;\u2014&nbsp; v1.0</div>",
           "justifyContent": "center",
           "textMode": "html"
         },

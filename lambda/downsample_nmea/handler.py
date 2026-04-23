@@ -24,7 +24,7 @@ import json
 import logging
 import os
 from datetime import datetime
-from urllib.parse import unquote_plus
+from urllib.parse import unquote, unquote_plus
 
 import boto3
 from botocore.exceptions import ClientError
@@ -276,7 +276,7 @@ def _extract_records(event):
     pairs = []
     if event.get("source") == "aws.s3":
         bucket = event["detail"]["bucket"]["name"]
-        key = unquote_plus(event["detail"]["object"]["key"])
+        key = unquote(event["detail"]["object"]["key"])
         pairs.append((bucket, key))
         return pairs
     for record in event.get("Records", []):

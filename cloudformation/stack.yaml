@@ -70,7 +70,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${S3BucketName}/${OutputPrefix}/*"
+                Resource:
+                  - !Sub "arn:aws:s3:::${S3BucketName}/${OutputPrefix}/*"
+                  - !Sub "arn:aws:s3:::${S3BucketName}/vg710-can-heartbeat/*"
         - PolicyName: SQSSendDLQ
           PolicyDocument:
             Version: "2012-10-17"

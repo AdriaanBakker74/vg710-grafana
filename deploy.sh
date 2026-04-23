@@ -140,7 +140,10 @@ aws iam put-role-policy \
       {
         \"Effect\": \"Allow\",
         \"Action\": \"s3:PutObject\",
-        \"Resource\": \"arn:aws:s3:::${BUCKET}/${OUTPUT_PREFIX}/*\"
+        \"Resource\": [
+          \"arn:aws:s3:::${BUCKET}/${OUTPUT_PREFIX}/*\",
+          \"arn:aws:s3:::${BUCKET}/vg710-can-heartbeat/*\"
+        ]
       },
       {
         \"Effect\": \"Allow\",
